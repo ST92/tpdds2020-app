@@ -115,11 +115,12 @@
     (closeOnOutsideClick)="false" (closeOnBackButton)="false" (onHidden)="cerrarSedesCompetencias()"
     [(visible)]="popupSedesCompetencia">
 
-    <dx-data-grid id="gridContainer" [dataSource]="gridSedes" [remoteOperations]="true" [repaintChangesOnly]="true"
+    <dx-data-grid id="gridContainer" [dataSource]="sedesCompetencia" [remoteOperations]="true" [repaintChangesOnly]="true"
         [height]="gridHeight" [showBorders]="true">
         <dxo-selection mode="single"></dxo-selection>
         <dxo-filter-row [visible]="true"></dxo-filter-row>
-        <dxi-column dataField="sede.nombre" [allowFiltering]="true" caption="Sede">
+        <dxi-column dataField="sedesId" [allowFiltering]="true" caption="Sede">
+            <dxo-lookup [dataSource]="sedesDataSource" displayExpr="nombre" valueExpr="id"></dxo-lookup>
         </dxi-column>
         <dxi-column dataField="disponibilidad" [allowFiltering]="true" caption="Fechas">
         </dxi-column>
@@ -131,8 +132,8 @@
         <dx-button class="button-popup white-text green-button" style="margin-left:5px" text="Cerrar" type="cancel"
             alignment="right" (onClick)="cerrarSedesCompetencias()" icon="remove">
         </dx-button>
-        <dx-button class="button-popup white-text green-button" style="margin-left:5px" text="Agregar Sede" type="cancel"
-            alignment="right" (onClick)="agregarSedes()" icon="add">
+        <dx-button class="button-popup white-text green-button" style="margin-left:5px" text="Agregar Sede"
+            type="cancel" alignment="right" (onClick)="agregarSedes()" icon="add">
         </dx-button>
         <dx-button class="button-popup white-text green-button" style="margin-left:5px" text="Guardar" type="success"
             alignment="right" (onClick)="guardarSedesCompetencia()" icon="save">
@@ -146,23 +147,19 @@
 
     <dx-form id="form" [(formData)]="sedeCompetencia" labelLocation="top" minColWidth="200" width="100%">
         <dxi-item itemType="group" colCount="2">
-           
-                <dxi-item dataField="sedesId" editorType="dxSelectBox"
-                    [editorOptions]="{ dataSource: sedesDataSource, 
-                    value: competencia?.deporteId, displayExpr: 'nombre', 
+            <dxi-item dataField="sedesId" editorType="dxSelectBox" [editorOptions]="{ dataSource: sedesDataSource, 
+                    value: sedeCompetencia?.sedesId, displayExpr: 'nombre', 
                     valueExpr: 'id', searchEnabled:true, 
                     onValueChanged: sedeChanged }">
-                    <dxo-label text="Sede"></dxo-label>
-                    <dxi-validation-rule type="required" message="El campo sede es obligatorio.">
-                    </dxi-validation-rule>
-                </dxi-item>
-           
+                <dxo-label text="Sede"></dxo-label>
+                <dxi-validation-rule type="required" message="El campo sede es obligatorio.">
+                </dxi-validation-rule>
+            </dxi-item>
             <dxi-item dataField="disponibilidad" readOnly="false">
                 <dxo-label text="Cantidad de fechas disponibles"></dxo-label>
                 <dxi-validation-rule type="required" message="El campo fechas disponibles es obligatorio.">
                 </dxi-validation-rule>
             </dxi-item>
-
         </dxi-item>
     </dx-form>
 

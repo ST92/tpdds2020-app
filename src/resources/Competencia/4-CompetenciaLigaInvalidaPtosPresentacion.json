@@ -1,0 +1,21 @@
+{
+    "nombre": "Competencia_Liga_Invalida_PtosPresentacion",
+    "reglamento":" ",
+    "permiteEmpate": false,
+    "ptosAanado":20,
+    "ptosAmpate":null,
+    "ptosAresentacion": 40,
+    "ptosAusencia": 15,
+    "cantidadSets": null,
+    "deporteId": 2,
+    "usuarioId": 1,
+    "tipoCompetenciaId": 1,
+    "tipoPuntuacionId": 2,
+    "listaSedesCompetencia":[
+        {
+            "disponibilidad":10,
+            "sedesId":2
+        }
+
+    ]
+}

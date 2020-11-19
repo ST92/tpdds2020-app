@@ -1,0 +1,29 @@
+{
+    "nombre": "Competencia_Liga_Valida_Sets",
+    "reglamento":" ",
+    "permiteEmpate": true,
+    "ptosGanado":20,
+    "ptosEmpate":10,
+    "ptosPresentacion": 10,
+    "ptosAusencia": null,
+    "cantidadSets": 5,
+    "deporteId": 1,
+    "usuarioId": 1,
+    "tipoCompetenciaId": 1,
+    "tipoPuntuacionId": 2,
+    "listaSedesCompetencia":[
+        {
+            "disponibilidad":5,
+            "sedesId":1
+        },
+        {
+            "disponibilidad":4,
+            "sedesId":2
+        },
+        {
+            "disponibilidad":2,
+            "sedesId":3
+        }
+
+    ]
+}

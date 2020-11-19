@@ -7,7 +7,7 @@ import { FooterModule, LoginFormModule } from './shared/components';
 import { AuthService, ScreenService, AppInfoService } from './shared/services';
 import { NotAuthorizedContainerModule } from './not-authorized-container';
 import { AppRoutingModule } from './app-routing.module';
-import { DxBoxModule, DxButtonModule, DxCheckBoxModule, DxDataGridModule, DxFormModule, DxPopupModule, DxSelectBoxModule, DxTemplateModule, DxTextBoxModule, DxTreeViewModule, DxValidatorModule } from 'devextreme-angular';
+import { DxBoxModule, DxButtonModule, DxCheckBoxModule, DxDataGridModule, DxFormModule, DxPopupModule, DxSelectBoxModule, DxTemplateModule, DxTextBoxModule, DxValidatorModule } from 'devextreme-angular';
 import { AltaCompetenciaComponent } from './pages/alta-competencia/alta-competencia.component';
 import { DataService } from './data.service';
 import { HttpClientModule } from '@angular/common/http';

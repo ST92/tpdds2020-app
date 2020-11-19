@@ -77,6 +77,7 @@ export class Competencia {
     tipoCompetenciaId: any;
     deporteId: any;
     tipoPuntuacionId: any;
+    listaSedesCompetencia: any;
 }
 
 
@@ -104,7 +105,8 @@ export class DataService {
             "estadoCompetenciaId": null,
             "tipoCompetenciaId": null,
             "deporteId": null,
-            "tipoPuntuacionId": null
+            "tipoPuntuacionId": null,
+            "listaSedesCompetencia": []
         }
 
         return competencia;
@@ -150,31 +152,31 @@ export class DataService {
         return sedesId;
     }
 
-    getEstadoCompetencia() {
-        let estadoCompetencia: EstadoCompetencia = {
-            "id": null,
-            "nombre": "",
-        };
+    getEstadosCompetencia() {
+        let estadoCompetencias = [
+            { id: 1, nombre: 'CREADA' },
+          ];
 
-        return estadoCompetencia;
+        return estadoCompetencias;
     }
 
-    getTipoCompetencia() {
-        let tipoCompetencia: TipoCompetencia = {
-            "id": null,
-            "nombre": "",
-        };
-
-        return tipoCompetencia;
+    cgetTiposCompetencia() {
+        return this.httpClient.get(environment.apiUrl + 'competencias/tipocompetencia')
+        .toPromise()
+        .then((data: any) => {
+            return data;
+        })
+        .catch(error => { throw 'Data Loading Error' });
     }
 
-    getDeporte() {
-        let deporte: Deporte = {
-            "id": null,
-            "nombre": ""
-        }
+    getDeportes() {
+        let deportes = [
+            { id: 1, nombre: 'football' },
+            { id: 2, nombre: 'basquet' },
+            { id: 3, nombre: 'tenis' }
+          ]
 
-        return deporte;
+        return deportes;
     }
 
     getLocalidad() {
@@ -185,7 +187,7 @@ export class DataService {
         return localidadId;
     }
 
-    getTipoDocumento() {
+    getTiposDocumento() {
         let tipoDocumentoId: TipoDocumento = {
             "id": null,
             "nombre": ""
@@ -194,13 +196,13 @@ export class DataService {
         return tipoDocumentoId;
     }
 
-    getTipoPuntuacion() {
-        let tipoPuntuacionId: TipoPuntuacion = {
-            "id": null,
-            "nombre": ""
-        }
-
-        return tipoPuntuacionId;
+    cgetTiposPuntuacion() {
+        return this.httpClient.get(environment.apiUrl + 'competencias/tipopuntuacion')
+            .toPromise()
+            .then((data: any) => {
+                return data;
+            })
+            .catch(error => { throw 'Data Loading Error' });
     }
 
     cgetSedes() {
@@ -211,6 +213,5 @@ export class DataService {
             })
             .catch(error => { throw 'Data Loading Error' });
     }
-
 
 }
