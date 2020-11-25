@@ -51,15 +51,15 @@ export class Usuario {
     password: string;
     documento: number;
     confirmacionTerminos: boolean;
-    localidadId: any;
-    tipoDocumentoId: any;
+    localidadId: number;
+    tipoDocumentoId: number;
 }
 
 export class SedesCompetencia {
     id: number;
     disponibilidad: number;
-    competenciaId: any;
-    sedesId: any;
+    competenciaId: number;
+    sedesId: number;
 }
 
 export class Competencia {
@@ -73,10 +73,11 @@ export class Competencia {
     ptosAusencia: number;
     cantidadSets: number;
     fechaBaja: Date;
-    estadoCompetenciaId: any;
-    tipoCompetenciaId: any;
-    deporteId: any;
-    tipoPuntuacionId: any;
+    estadoCompetenciaId: number;
+    usuarioId: number;
+    tipoCompetenciaId: number;
+    deporteId: number;
+    tipoPuntuacionId: number;
     listaSedesCompetencia: any;
 }
 
@@ -102,7 +103,8 @@ export class DataService {
             "ptosAusencia": null,
             "cantidadSets": null,
             "fechaBaja": null,
-            "estadoCompetenciaId": null,
+            "estadoCompetenciaId": 1,
+            "usuarioId": 1,
             "tipoCompetenciaId": null,
             "deporteId": null,
             "tipoPuntuacionId": null,
@@ -117,7 +119,7 @@ export class DataService {
             "id": null,
             "disponibilidad": null,
             "competenciaId": null,
-            "sedesId": []
+            "sedesId": null
         }
 
         return sedesCompetencia;
@@ -155,18 +157,18 @@ export class DataService {
     getEstadosCompetencia() {
         let estadoCompetencias = [
             { id: 1, nombre: 'CREADA' },
-          ];
+        ];
 
         return estadoCompetencias;
     }
 
     cgetTiposCompetencia() {
         return this.httpClient.get(environment.apiUrl + 'competencias/tipocompetencia')
-        .toPromise()
-        .then((data: any) => {
-            return data;
-        })
-        .catch(error => { throw 'Data Loading Error' });
+            .toPromise()
+            .then((data: any) => {
+                return data;
+            })
+            .catch(error => { throw 'Data Loading Error' });
     }
 
     getDeportes() {
@@ -174,7 +176,7 @@ export class DataService {
             { id: 1, nombre: 'football' },
             { id: 2, nombre: 'basquet' },
             { id: 3, nombre: 'tenis' }
-          ]
+        ]
 
         return deportes;
     }
@@ -206,12 +208,35 @@ export class DataService {
     }
 
     cgetSedes() {
-        return this.httpClient.get(environment.apiUrl + 'sedes')
+        //añadir deporteId como parametro para la query
+        return this.httpClient.get(environment.apiUrl + 'sedes?lorder_by[id]=ASC&filters[usuarioId.id]=1&operators[usuarioId.id]==')
             .toPromise()
             .then((data: any) => {
                 return data;
             })
             .catch(error => { throw 'Data Loading Error' });
+    }
+
+    cgetCompetencias() {
+        //añadir deporteId como parametro para la query
+        return this.httpClient.get(environment.apiUrl + 'competencias?lorder_by[id]=ASC&filters[usuarioId.id]=1&operators[usuarioId.id]==')
+            .toPromise()
+            .then((data: any) => {
+                return data;
+            })
+            .catch(error => { throw 'Data Loading Error' });
+    }
+
+    postCompetencia(competencia) {
+        return this.httpClient.post(environment.apiUrl + 'competencias', competencia)
+            .toPromise()
+            .then((data: any) => {
+                return data;
+            })
+            .catch(error => {
+                //error.error.errors.
+                throw error;
+            });
     }
 
 }

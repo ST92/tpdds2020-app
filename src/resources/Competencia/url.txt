@@ -1,0 +1,3 @@
+/usuarios?offset=0&limit=40&order_by[nombre]=ASC&filters[rol.id]=3&operators[rol.id]==
+
+tpdds2020.local/api/sedes?filters[usuario.id]=1
