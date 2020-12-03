@@ -96,7 +96,7 @@ export class AltaCompetenciaComponent implements OnInit {
     });
 
     this.dataService.cgetCompetencias().then((response) => {
-      this.competenciasDataSource = response.competencias;
+      this.competenciasDataSource = response.items;
     }).catch(error => {
       console.log(error);
     });
@@ -200,6 +200,13 @@ export class AltaCompetenciaComponent implements OnInit {
   seleccionaItemGrid($event) {
     if ($event.currentSelectedRowKeys.length > 0) {
       this.competencia = $event.selectedRowsData[0];
+      /**
+       * llamar cget de participantes, y realizar el count de los participantes para mostrar en 
+       * la grilla de participantes y el count en el ver competencia
+       * llamar al metodo de eventos restantes para mostrar en ver competencia
+       * 
+       * armar popup de generar fixture
+       */
       this.verCompetenciaPopup = true;
       this.verCompetenciaTitulo = 'Ver Competencia';
     }
@@ -219,7 +226,7 @@ export class AltaCompetenciaComponent implements OnInit {
           }
         }, "success", 3000);
       }).catch(error => {
-        console.log(error.errors.children);
+        
       });
 
     }

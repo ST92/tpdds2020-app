@@ -215,18 +215,14 @@
     <dx-form id="formCompetencia" [(formData)]="competencia" labelLocation="top" minColWidth="200" width="100%">
 
         <dxi-item itemType="group" colSpan="2">
-            <dxi-item dataField="nombre" readOnly="false">
+            <dxi-item dataField="nombre" readOnly="true">
                 <dxo-label text="Nombre"></dxo-label>
-                <dxi-validation-rule type="required" message="El campo nombre es obligatorio.">
-                </dxi-validation-rule>
             </dxi-item>
         </dxi-item>
 
         <dxi-item itemType="group" colCount="2">
             <dxi-item itemType="group" colCount="1">
-                <dxi-item dataField="deporteId" editorType="dxSelectBox"
-                    [editorOptions]="{ dataSource: deporteDataSource, 
-                        value: competencia?.deporteId, displayExpr: 'nombre', valueExpr: 'id', searchEnabled:true, onValueChanged: deporteChanged }">
+                <dxi-item dataField="deporteId.nombre" readOnly="true">
                     <dxo-label text="Deporte"></dxo-label>
                     <dxi-validation-rule type="required" message="El campo deporte es obligatorio.">
                     </dxi-validation-rule>

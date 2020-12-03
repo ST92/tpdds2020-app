@@ -234,8 +234,9 @@ export class DataService {
                 return data;
             })
             .catch(error => {
-                //error.error.errors.
-                throw error;
+                //throw error.error.errors.children.atributo.errors[0];
+                debugger
+                console.log(error.error.errors.children.nombre.errors[0]);
             });
     }
 
