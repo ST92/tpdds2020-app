@@ -57,7 +57,7 @@ export class Usuario {
 
 export class SedesCompetencia {
     id: number;
-    disponibilidad: number;
+    disponibilidad: any;
     competenciaId: number;
     sedesId: number;
 }
@@ -79,6 +79,14 @@ export class Competencia {
     deporteId: number;
     tipoPuntuacionId: number;
     listaSedesCompetencia: any;
+    listaParticipantes: any;
+}
+
+export class Participante {
+    id: number;
+    nombre: string;
+    email: string;
+    competenciaId: number;
 }
 
 
@@ -108,10 +116,22 @@ export class DataService {
             "tipoCompetenciaId": null,
             "deporteId": null,
             "tipoPuntuacionId": null,
-            "listaSedesCompetencia": []
+            "listaSedesCompetencia": [],
+            "listaParticipantes": []
         }
 
         return competencia;
+    }
+
+    getParticipante() {
+        let participante: Participante = {
+            "id": null,
+            "nombre": '',
+            "email": '',
+            "competenciaId": null
+        }
+
+        return participante;
     }
 
     getSedeCompetencia() {
@@ -208,13 +228,23 @@ export class DataService {
     }
 
     cgetSedes() {
-        //añadir deporteId como parametro para la query
-        return this.httpClient.get(environment.apiUrl + 'sedes?lorder_by[id]=ASC&filters[usuarioId.id]=1&operators[usuarioId.id]==')
+        return this.httpClient.get(environment.apiUrl + 'sedes')
             .toPromise()
             .then((data: any) => {
                 return data;
             })
             .catch(error => { throw 'Data Loading Error' });
+    }
+
+    getSedesPorDeporte(idUsuario, idDeporte) {
+        //añadir deporteId como parametro para la query
+        //api/sedes/{idUsuario}/sedespordeporte/{idDeporte}
+        return this.httpClient.get(environment.apiUrl + 'sedes/' + idUsuario + '/sedespordeporte/' + idDeporte)
+            .toPromise()
+            .then((data: any) => {
+                return data;
+            })
+            .catch(error => { throw error });
     }
 
     cgetCompetencias() {
@@ -235,8 +265,60 @@ export class DataService {
             })
             .catch(error => {
                 //throw error.error.errors.children.atributo.errors[0];
-                debugger
-                console.log(error.error.errors.children.nombre.errors[0]);
+                //debugger
+                console.log(error);
+            });
+    }
+
+    cgetParticipantes(competenciaId) {
+        //añadir deporteId como parametro para la query
+        return this.httpClient.get(environment.apiUrl + 'participantes?order_by[id]=ASC&filters[competenciaId]=' + competenciaId + '&operators[competenciaId]==')
+            .toPromise()
+            .then((data: any) => {
+                return data;
+            })
+            .catch(error => { throw 'Data Loading Error' });
+    }
+
+    //api/fixtures/{competencia}/getproximosencuentros
+    cgetProximosEncuentros(competenciaId) {
+        //añadir deporteId como parametro para la query
+        return this.httpClient.patch(environment.apiUrl + 'fixtures/' + competenciaId + '/getproximosencuentros')
+            .toPromise()
+            .then((data: any) => {
+                return data;
+            })
+            .catch(error => { throw 'Data Loading Error' });
+    }
+
+    //api/fixtures/{competencia}/generarfixture
+    generarFixture(competenciaId) {
+        //añadir deporteId como parametro para la query
+        return this.httpClient.patch(environment.apiUrl + 'fixtures/' + competenciaId + '/generarfixture')
+            .toPromise()
+            .then((data: any) => {
+                return data;
+            })
+            .catch(error => { 
+                throw error
+            });
+    }
+
+    postParticipantes(participante) {
+        /**
+         * conviene hacer un put de competencia para actualizar la lista de participantes??
+         * o guardo los participantes pasando el id de la competencia?
+         */
+        return this.httpClient.post(environment.apiUrl + 'participantes', participante)
+            .toPromise()
+            .then((data: any) => {
+                return data;
+            })
+            .catch(error => {
+                //throw error.error.errors.children.atributo.errors[0];
+                //debugger
+                console.log("postParticipantes", error);
+                throw error;
             });
     }
 

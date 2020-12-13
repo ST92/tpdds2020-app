@@ -8,8 +8,9 @@
                 stylingMode="text" type="normal" icon="filter">
             </dx-button>
         </div>
-        <dx-data-grid id="gridCompetencia" [dataSource]="competenciasDataSource" [remoteOperations]="true" [repaintChangesOnly]="true"
-            [height]="gridCompetenciaHeight" (onSelectionChanged)="seleccionaItemGrid($event)" [showBorders]="true">
+        <dx-data-grid id="gridCompetencia" [dataSource]="competenciasDataSource" [remoteOperations]="true"
+            [repaintChangesOnly]="true" [height]="gridCompetenciaHeight"
+            (onSelectionChanged)="seleccionaItemGrid($event)" [showBorders]="true">
             <dxo-selection mode="single"></dxo-selection>
             <dxo-filter-row [visible]="true"></dxo-filter-row>
             <dxi-column dataField="nombre" [allowFiltering]="true" caption="Nombre">
@@ -30,7 +31,7 @@
 </div>
 
 <!--popup de alta de competencias-->
-<dx-popup class="popup" width="600" height="auto" showTitle="true" [title]="altaCompetenciaTitulo" dragEnabled="false"
+<dx-popup class="popup" width="600" height="auto" showTitle="true" [title]="altaCompetenciaTitulo" dragEnabled="true"
     (closeOnOutsideClick)="false" (closeOnBackButton)="false" (onHidden)="cerrarAltaCompetencia()"
     [(visible)]="popupAltaCompetencia">
     <dx-form id="formCompetencia" [(formData)]="competencia" labelLocation="top" minColWidth="200" width="100%">
@@ -209,112 +210,43 @@
 </dx-popup>
 
 <!--popup de ver competencias-->
-<dx-popup class="popup" width="600" height="auto" showTitle="true" [title]="verCompetenciaTitulo" dragEnabled="false"
+<dx-popup class="popup" width="700" height="auto" showTitle="true" [title]="verCompetenciaTitulo" dragEnabled="false"
     (closeOnOutsideClick)="false" (closeOnBackButton)="false" (onHidden)="cerrarVerCompetencia()"
     [(visible)]="verCompetenciaPopup">
-    <dx-form id="formCompetencia" [(formData)]="competencia" labelLocation="top" minColWidth="200" width="100%">
 
-        <dxi-item itemType="group" colSpan="2">
-            <dxi-item dataField="nombre" readOnly="true">
-                <dxo-label text="Nombre"></dxo-label>
-            </dxi-item>
-        </dxi-item>
-
-        <dxi-item itemType="group" colCount="2">
-            <dxi-item itemType="group" colCount="1">
-                <dxi-item dataField="deporteId.nombre" readOnly="true">
-                    <dxo-label text="Deporte"></dxo-label>
-                    <dxi-validation-rule type="required" message="El campo deporte es obligatorio.">
-                    </dxi-validation-rule>
-                </dxi-item>
-            </dxi-item>
-            <dxi-item itemType="group" colCount="1">
-                <dxi-item dataField="tipoCompetenciaId" editorType="dxSelectBox"
-                    [editorOptions]="{ dataSource: tipoCompetenciaDataSource, 
-                    value: competencia?.tipoCompetenciaId, displayExpr: 'nombre', valueExpr: 'id', searchEnabled:true, onValueChanged: tipoCompetenciaChanged  }">
-                    <dxo-label text="Tipo de competencia"></dxo-label>
-                    <dxi-validation-rule type="required" message="El campo tipo de competencia es obligatorio.">
-                    </dxi-validation-rule>
-                </dxi-item>
-            </dxi-item>
-        </dxi-item>
-
-        <dxi-item itemType="group" colSpan="2">
-            <dxi-item dataField="reglamento" editorType="dxTextArea" [editorOptions]="{ height: 100 }">
-            </dxi-item>
-        </dxi-item>
-
-        <dxi-item itemType="group" colCount="2" [visible]="(tipoCompetencia == 1)">
-            <dxi-item itemType="group" colCount="1">
-                <dxi-item dataField="permiteEmpate" editorType="dxCheckBox"
-                    [editorOptions]="{ value: competencia?.permiteEmpate, onValueChanged: permiteEmpateChanged  }">
-                    <dxo-label text="Permite empate"></dxo-label>
-                </dxi-item>
-            </dxi-item>
-            <dxi-item itemType="group" colCount="1" [visible]="(permiteEmpate == true)">
-                <dxi-item dataField="ptosEmpate" readOnly="false">
-                    <dxo-label text="Puntos por empate"></dxo-label>
-                    <dxi-validation-rule type="required" message="El campo puntos por empate es obligatorio.">
-                    </dxi-validation-rule>
-                </dxi-item>
-            </dxi-item>
-        </dxi-item>
-
-        <dxi-item itemType="group" colCount="2" [visible]="(tipoCompetencia == 1)">
-            <dxi-item itemType="group" colCount="1">
-                <dxi-item dataField="ptosGanado" readOnly="false">
-                    <dxo-label text="Puntos por ganador"></dxo-label>
-                    <dxi-validation-rule type="required" message="El campo puntos por ganador es obligatorio.">
-                    </dxi-validation-rule>
-                </dxi-item>
-            </dxi-item>
-            <dxi-item itemType="group" colCount="1">
-                <dxi-item dataField="ptosPresentacion" readOnly="false">
-                    <dxo-label text="Puntos por presentarse"></dxo-label>
-                    <dxi-validation-rule type="required" message="El campo puntos por presentarse es obligatorio.">
-                    </dxi-validation-rule>
-                </dxi-item>
-            </dxi-item>
-        </dxi-item>
-
-        <dxi-item itemType="group" colCount="2">
-            <dxi-item itemType="group" colCount="1">
-                <dxi-item dataField="tipoPuntuacionId" editorType="dxSelectBox"
-                    [editorOptions]="{ dataSource: tipoPuntuacionDataSource, 
-                    value: competencia?.tipoPuntuacionId, displayExpr: 'nombre', valueExpr: 'id', searchEnabled:true, onValueChanged: tipoPuntuacionChanged }">
-                    <dxo-label text="Tipo de puntuacion"></dxo-label>
-                    <dxi-validation-rule type="required" message="El campo tipo de puntuacion es obligatorio.">
-                    </dxi-validation-rule>
-                </dxi-item>
-            </dxi-item>
-            <dxi-item itemType="group" colCount="1" [visible]="(tipoPuntuacion == 2)">
-                <dxi-item dataField="ptosAusencia" readOnly="false">
-                    <dxo-label text="Puntos por ausencia"></dxo-label>
-                    <dxi-validation-rule type="required" message="El campo puntos por ausencia es obligatorio.">
-                    </dxi-validation-rule>
-                </dxi-item>
-            </dxi-item>
-        </dxi-item>
-
-        <dxi-item itemType="group" colCount="2" [visible]="(tipoPuntuacion == 1)">
-            <dxi-item dataField="cantidadSets" readOnly="false">
-                <dxo-label text="Cantidad de sets"></dxo-label>
-                <dxi-validation-rule type="required" message="El campo cantidad de sets es obligatorio.">
-                </dxi-validation-rule>
-            </dxi-item>
-        </dxi-item>
-
-    </dx-form>
-    <br>
+    <div>
+        <span><b>Nombre:</b> {{competencia.nombre}}</span>
+        <br>
+        <br>
+        <span><b>Modalidad:</b> {{competencia?.tipoCompetenciaId?.nombre}}</span>
+        <br>
+        <br>
+        <span><b>Deporte:</b> {{competencia?.deporteId?.nombre}}</span>
+        <br>
+        <br>
+        <span><b>Estado:</b> {{competencia?.estadoCompetenciaId?.nombre}}</span>
+        <br>
+        <br>
+        <span><b>Participantes:</b> {{cantidadParticipantes}}</span>
+        <br>
+        <br>
+        <span><b>Proximos eventos:</b> {{proximosEncuentros}}</span>
+        <br>
+        <br>
+    </div>
+    
     <div class="buttons-on-popup" style="text-align:right">
         <dx-button class="button-popup white-text green-button" style="margin-left:5px" text="Cerrar" type="cancel"
             alignment="right" (onClick)="cerrarVerCompetencia()" icon="remove">
         </dx-button>
-        <dx-button class="button-popup white-text green-button" style="margin-left:5px" text="Ver Participantes" type="cancel"
-            alignment="right" (onClick)="verParticipantes()" icon="search">
+        <dx-button class="button-popup white-text green-button" style="margin-left:5px" text="Generar Fixture" type="cancel"
+            alignment="right" (onClick)="generarFixture()" icon="add">
+        </dx-button>
+        <dx-button class="button-popup white-text green-button" style="margin-left:5px" text="Ver Participantes"
+            type="cancel" alignment="right" (onClick)="verParticipantes()" icon="user">
         </dx-button>
         <dx-button class="button-popup white-text green-button" style="margin-left:5px" text="Guardar" type="success"
-            alignment="right" (onClick)="guardarListaParticipantes()" icon="save">
+            alignment="right" (onClick)="actualizarListaParticipantes()" icon="save">
         </dx-button>
     </div>
 </dx-popup>
@@ -324,7 +256,7 @@
     (closeOnOutsideClick)="false" (closeOnBackButton)="false" (onHidden)="cerrarVerParticipantes()"
     [(visible)]="popupVerParticipantes">
 
-    <dx-data-grid id="gridParticipantes" [dataSource]="participantesDataSource" [remoteOperations]="true"
+    <dx-data-grid id="gridParticipantes" [dataSource]="participantesCompetencia" [remoteOperations]="true"
         [repaintChangesOnly]="true" [height]="gridParticipantesHeight" [showBorders]="true">
         <dxo-selection mode="single"></dxo-selection>
         <dxo-filter-row [visible]="true"></dxo-filter-row>
@@ -344,15 +276,15 @@
             type="cancel" alignment="right" (onClick)="agregarParticipante()" icon="add">
         </dx-button>
         <dx-button class="button-popup white-text green-button" style="margin-left:5px" text="Guardar" type="success"
-            alignment="right" (onClick)="guardarParticipantes()" icon="save">
+            alignment="right" (onClick)="guardarListaParticipantes()" icon="save">
         </dx-button>
     </div>
 </dx-popup>
 
-<!--popup para añadir una sedeCompetencia a la lista de sedes de la competencia => se invoca desde popup de sedes competencia-->
-<dx-popup class="popup" width="600" height="auto" showTitle="true" [title]="agregarParticipanteTitulo" dragEnabled="false"
-    (closeOnOutsideClick)="false" (closeOnBackButton)="false" (onHidden)="cerrarAgregarParticipante()"
-    [(visible)]="popupAgregarParticipante">
+<!--popup para añadir un participante a la lista de participantes de la competencia => se invoca desde popup de lista de participantes-->
+<dx-popup class="popup" width="600" height="auto" showTitle="true" [title]="agregarParticipanteTitulo"
+    dragEnabled="false" (closeOnOutsideClick)="false" (closeOnBackButton)="false"
+    (onHidden)="cerrarAgregarParticipante()" [(visible)]="popupAgregarParticipante">
 
     <dx-form id="participanteForm" [(formData)]="participante" labelLocation="top" minColWidth="200" width="100%">
         <dxi-item itemType="group" colCount="2">

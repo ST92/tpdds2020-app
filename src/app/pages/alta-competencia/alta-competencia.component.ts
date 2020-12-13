@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Competencia, DataService, SedesCompetencia } from 'src/app/data.service';
-import { DxButtonModule, DxDataGridComponent, DxFormComponent, DxSelectBoxComponent } from 'devextreme-angular';
+import { DxDataGridComponent, DxFormComponent, DxSelectBoxComponent } from 'devextreme-angular';
 import notify from 'devextreme/ui/notify';
 
 @Component({
@@ -42,10 +42,14 @@ export class AltaCompetenciaComponent implements OnInit {
   competenciaForm: any;
   participantesDataSource: any;
   participante: any;
+  participantesCompetencia: any = [];
   participanteForm: any;
+  cantidadParticipantes: number = null;
+  proximosEncuentros: number = null;
   gridSedes: any = [];
 
   sedesDataSource: any = [];//
+  sedesGridDataSource: any = [];
   estadoCompetenciasDataSource: any = [];//
   tipoCompetenciaDataSource: any = [];//
   deporteDataSource: any = [];//
@@ -64,6 +68,7 @@ export class AltaCompetenciaComponent implements OnInit {
     this.tipoPuntuacionChanged = this.tipoPuntuacionChanged.bind(this);
     this.permiteEmpateChanged = this.permiteEmpateChanged.bind(this);
     this.sedeChanged = this.sedeChanged.bind(this);
+    this.generarFixture = this.generarFixture.bind(this);
   }
 
   ngOnInit() {
@@ -76,8 +81,9 @@ export class AltaCompetenciaComponent implements OnInit {
     this.deporteDataSource = this.dataService.getDeportes();
     this.participante = {};
 
+    //sedesGridDataSource
     this.dataService.cgetSedes().then((response) => {
-      this.sedesDataSource = response.sedes;
+      this.sedesGridDataSource = response.sedes;
     }).catch(error => {
       console.log(error);
     });
@@ -118,6 +124,12 @@ export class AltaCompetenciaComponent implements OnInit {
     if (arg.value != undefined) {
       this.competencia.deporteId = arg.value;
       /*llamar a las sedes filtarndo por deporte*/
+      console.log(arg.value);
+      this.dataService.getSedesPorDeporte(1, this.competencia.deporteId).then((response) => {
+        this.sedesDataSource = response.sedes;
+      }).catch(error => {
+        console.log(error);
+      });
     }
 
   }
@@ -169,7 +181,17 @@ export class AltaCompetenciaComponent implements OnInit {
   }
 
   guardarSedes() {
-    this.sedesCompetencia.push(this.sedeCompetencia);
+    const index = this.sedesCompetencia.indexOf(this.sedeCompetencia);
+    if (index > -1) {
+      console.log("encontro indice", index);
+      this.sedesCompetencia[index].disponibilidad = this.sedeCompetencia.disponibilidad;
+    } else {
+      this.sedesCompetencia.push(this.sedeCompetencia);
+      console.log("no encontro indice", index);
+      console.log("sedesCompetencia", this.sedesCompetencia);
+      console.log("sedeCompetencia", this.sedeCompetencia);
+    }
+
     this.cerrarAgregarSedes();
   }
 
@@ -188,6 +210,8 @@ export class AltaCompetenciaComponent implements OnInit {
   }
 
   cerrarVerCompetencia() {
+    this.cantidadParticipantes = null;
+    this.proximosEncuentros = null;
     this.verCompetenciaPopup = false;
     this.competencia = this.dataService.getCompetencia();
   }
@@ -207,17 +231,34 @@ export class AltaCompetenciaComponent implements OnInit {
        * 
        * armar popup de generar fixture
        */
+      /**
+       * Revisar que el cget no filtra por id de competencia
+       */
+      this.dataService.cgetParticipantes(this.competencia.id).then((data: any) => {
+        this.cantidadParticipantes = data.items.length;
+        this.participantesCompetencia = data.items;
+      }).catch(error => {
+        console.log(error);
+      })
+
+      this.dataService.cgetProximosEncuentros(this.competencia.id).then((data: any) => {
+        this.proximosEncuentros = data;
+      }).catch(error => {
+        console.log(error);
+      })
+
       this.verCompetenciaPopup = true;
       this.verCompetenciaTitulo = 'Ver Competencia';
     }
   }
+
   guardarCompetencia() {
     if (this.formCompetencia.instance.validate().isValid) {
-      /**
-       * metodo que transforme en mayuscula todos los strings de la competencia
-       */
       this.dataService.postCompetencia(this.competencia).then((data: any) => {
         this.formCompetencia.instance.resetValues();
+        this.cerrarAltaCompetencia();
+        //refrescar o recargar grilla
+        this.gridCompetencia.instance.refresh();
         notify({
           message: "La competencia fue creada correctamente",
           position: {
@@ -226,7 +267,7 @@ export class AltaCompetenciaComponent implements OnInit {
           }
         }, "success", 3000);
       }).catch(error => {
-        
+
       });
 
     }
@@ -241,25 +282,56 @@ export class AltaCompetenciaComponent implements OnInit {
     this.popupVerParticipantes = true;
   }
 
-  guardarListaParticipantes() {
-    console.log('guardarListaParticipantes');
+  actualizarListaParticipantes() {
+
+    this.cerrarVerCompetencia();
   }
 
   agregarParticipante() {
     this.agregarParticipanteTitulo = 'Agregar Participante';
+    this.participante = this.dataService.getParticipante();
     this.popupAgregarParticipante = true;
   }
 
-  guardarParticipantes() {
-    console.log("guardado de participantes de la lista de participantes de la competencia");
+  guardarParticipante() {
+    this.participante.competenciaId = this.competencia.id;
+    this.participantesCompetencia.push(this.participante);
+    this.participantesCompetencia.forEach(participante => {
+      this.dataService.postParticipantes(participante).then((data: any) => {
+        confirm('Los participantes fueron guardados con éxito');
+        this.popupAgregarParticipante = false;
+      }).catch(error => {
+        console.log(error);
+      });
+    });
+    console.log("guardado de participante en la lista de participantes");
   }
 
   cerrarAgregarParticipante() {
     this.popupAgregarParticipante = false;
   }
 
-  guardarParticipante() {
-    console.log("guardado de participante en la lista de participantes");
+  guardarListaParticipantes() {
+    this.competencia.listaParticipantes = this.participantesCompetencia;
+    this.popupVerParticipantes = false;
+    console.log("guardado de la lista de participantes");
+  }
+
+  generarFixture() {
+    this.dataService.generarFixture(this.competencia.id).then((data: any) => {
+      console.log("data", data);
+      notify({
+        message: "Fixture generado correctamente",
+        position: {
+          my: "center top",
+          at: "center top"
+        }
+      }, "success", 5000);
+    }).catch(error => {
+
+      confirm(error.error.error.exception[0].message);
+
+    })
   }
 
 }
