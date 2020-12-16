@@ -41,6 +41,7 @@
                 <dxo-label text="Nombre"></dxo-label>
                 <dxi-validation-rule type="required" message="El campo nombre es obligatorio.">
                 </dxi-validation-rule>
+                <dxi-validation-rule type="stringLength" [max]="50" message="El nombre no puede exceder los 50 caracteres."></dxi-validation-rule>
             </dxi-item>
         </dxi-item>
 
@@ -82,6 +83,7 @@
                     <dxo-label text="Puntos por empate"></dxo-label>
                     <dxi-validation-rule type="required" message="El campo puntos por empate es obligatorio.">
                     </dxi-validation-rule>
+                    <dxi-validation-rule type="numeric" message="Debe ingresar sólo números."></dxi-validation-rule>
                 </dxi-item>
             </dxi-item>
         </dxi-item>
@@ -89,9 +91,10 @@
         <dxi-item itemType="group" colCount="2" [visible]="(tipoCompetencia == 1)">
             <dxi-item itemType="group" colCount="1">
                 <dxi-item dataField="ptosGanado" readOnly="false">
-                    <dxo-label text="Puntos por ganador"></dxo-label>
+                    <dxo-label text="Puntos por victoria"></dxo-label>
                     <dxi-validation-rule type="required" message="El campo puntos por ganador es obligatorio.">
                     </dxi-validation-rule>
+                    <dxi-validation-rule type="numeric" message="Debe ingresar sólo números."></dxi-validation-rule>
                 </dxi-item>
             </dxi-item>
             <dxi-item itemType="group" colCount="1">
@@ -99,6 +102,7 @@
                     <dxo-label text="Puntos por presentarse"></dxo-label>
                     <dxi-validation-rule type="required" message="El campo puntos por presentarse es obligatorio.">
                     </dxi-validation-rule>
+                    <dxi-validation-rule type="numeric" message="Debe ingresar sólo números."></dxi-validation-rule>
                 </dxi-item>
             </dxi-item>
         </dxi-item>
@@ -118,6 +122,7 @@
                     <dxo-label text="Puntos por ausencia"></dxo-label>
                     <dxi-validation-rule type="required" message="El campo puntos por ausencia es obligatorio.">
                     </dxi-validation-rule>
+                    <dxi-validation-rule type="numeric" message="Debe ingresar sólo números."></dxi-validation-rule>
                 </dxi-item>
             </dxi-item>
         </dxi-item>
@@ -127,6 +132,7 @@
                 <dxo-label text="Cantidad de sets"></dxo-label>
                 <dxi-validation-rule type="required" message="El campo cantidad de sets es obligatorio.">
                 </dxi-validation-rule>
+                <dxi-validation-rule type="numeric" message="Debe ingresar sólo números."></dxi-validation-rule>
             </dxi-item>
         </dxi-item>
 
@@ -157,7 +163,7 @@
         <dxi-column dataField="sedesId" [allowFiltering]="true" caption="Sede">
             <dxo-lookup [dataSource]="sedesDataSource" displayExpr="nombre" valueExpr="id"></dxo-lookup>
         </dxi-column>
-        <dxi-column dataField="disponibilidad" [allowFiltering]="true" caption="Fechas">
+        <dxi-column dataField="disponibilidad" [allowFiltering]="true" caption="Disponibilidad">
         </dxi-column>
         <dxo-scrolling mode="virtual" rowRenderingMode="virtual"></dxo-scrolling>
         <dxo-paging [pageSize]="20"></dxo-paging>
@@ -195,6 +201,7 @@
                 <dxo-label text="Cantidad de fechas disponibles"></dxo-label>
                 <dxi-validation-rule type="required" message="El campo fechas disponibles es obligatorio.">
                 </dxi-validation-rule>
+                <dxi-validation-rule type="numeric" message="Debe ingresar sólo números."></dxi-validation-rule>
             </dxi-item>
         </dxi-item>
     </dx-form>
@@ -245,9 +252,6 @@
         <dx-button class="button-popup white-text green-button" style="margin-left:5px" text="Ver Participantes"
             type="cancel" alignment="right" (onClick)="verParticipantes()" icon="user">
         </dx-button>
-        <dx-button class="button-popup white-text green-button" style="margin-left:5px" text="Guardar" type="success"
-            alignment="right" (onClick)="actualizarListaParticipantes()" icon="save">
-        </dx-button>
     </div>
 </dx-popup>
 
@@ -275,9 +279,6 @@
         <dx-button class="button-popup white-text green-button" style="margin-left:5px" text="Agregar Participante"
             type="cancel" alignment="right" (onClick)="agregarParticipante()" icon="add">
         </dx-button>
-        <dx-button class="button-popup white-text green-button" style="margin-left:5px" text="Guardar" type="success"
-            alignment="right" (onClick)="guardarListaParticipantes()" icon="save">
-        </dx-button>
     </div>
 </dx-popup>
 
@@ -286,7 +287,7 @@
     dragEnabled="false" (closeOnOutsideClick)="false" (closeOnBackButton)="false"
     (onHidden)="cerrarAgregarParticipante()" [(visible)]="popupAgregarParticipante">
 
-    <dx-form id="participanteForm" [(formData)]="participante" labelLocation="top" minColWidth="200" width="100%">
+    <dx-form id="formParticipante" [(formData)]="participante" labelLocation="top" minColWidth="200" width="100%">
         <dxi-item itemType="group" colCount="2">
             <dxi-item dataField="nombre" readOnly="false">
                 <dxo-label text="Nombre del Equipo/Participante"></dxo-label>
@@ -296,6 +297,8 @@
             <dxi-item dataField="email" readOnly="false">
                 <dxo-label text="E-Mail de contacto"></dxo-label>
                 <dxi-validation-rule type="required" message="El campo E-Mail es obligatorio.">
+                </dxi-validation-rule>
+                <dxi-validation-rule type="email" message="Debe ingresar un formato de email válido.">
                 </dxi-validation-rule>
             </dxi-item>
         </dxi-item>

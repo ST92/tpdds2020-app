@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Competencia, DataService, SedesCompetencia } from 'src/app/data.service';
 import { DxDataGridComponent, DxFormComponent, DxSelectBoxComponent } from 'devextreme-angular';
-import notify from 'devextreme/ui/notify';
 
 @Component({
   selector: 'app-alta-competencia',
@@ -9,7 +8,6 @@ import notify from 'devextreme/ui/notify';
   styleUrls: ['./alta-competencia.component.scss']
 })
 export class AltaCompetenciaComponent implements OnInit {
-  @ViewChild(DxDataGridComponent) dataGrid: DxDataGridComponent;
   @ViewChild(DxDataGridComponent) gridCompetencia: DxDataGridComponent;
   @ViewChild(DxDataGridComponent) gridParticipantes: DxDataGridComponent;
   @ViewChild(DxFormComponent) formCompetencia: DxFormComponent;
@@ -69,6 +67,8 @@ export class AltaCompetenciaComponent implements OnInit {
     this.permiteEmpateChanged = this.permiteEmpateChanged.bind(this);
     this.sedeChanged = this.sedeChanged.bind(this);
     this.generarFixture = this.generarFixture.bind(this);
+    // this.agregarParticipante = this.agregarParticipante.bind(this);
+    // this.cerrarAgregarParticipante = this.cerrarAgregarParticipante.bind(this);
   }
 
   ngOnInit() {
@@ -110,28 +110,26 @@ export class AltaCompetenciaComponent implements OnInit {
   }
 
   cerrarModal() {
-    this.formSedeCompetencia.instance.resetValues();
-    this.dataGrid.instance.clearSelection();
+
     this.popupSedesCompetencia = false;
   }
 
-
-  guardar() {
-    console.log("guardar()", this.competencia);
-  }
-
   deporteChanged(arg) {
-    if (arg.value != undefined) {
-      this.competencia.deporteId = arg.value;
-      /*llamar a las sedes filtarndo por deporte*/
-      console.log(arg.value);
-      this.dataService.getSedesPorDeporte(1, this.competencia.deporteId).then((response) => {
-        this.sedesDataSource = response.sedes;
-      }).catch(error => {
-        console.log(error);
-      });
-    }
+    if (this.popupAltaCompetencia === true) {
+      if (arg.value != undefined) {
+        this.competencia.deporteId = arg.value;
+        /*llamar a las sedes filtrando por deporte*/
+        this.dataService.getSedesPorDeporte(1, this.competencia.deporteId).then((response) => {
+          this.sedesDataSource = response.sedes;
 
+          if (this.sedesDataSource.length === 0) {
+            confirm('El deporte no tiene sedes asociadas. Debe cambiar de deporte o asociar sedes al deporte elegido.')
+          }
+        }).catch(error => {
+          console.log(error);
+        });
+      }
+    }
   }
 
   tipoCompetenciaChanged(arg) {
@@ -172,36 +170,38 @@ export class AltaCompetenciaComponent implements OnInit {
 
   guardarSedesCompetencia() {
     this.competencia.listaSedesCompetencia = this.sedesCompetencia;
+    this.gridCompetencia.instance.clearSelection();
     this.cerrarSedesCompetencias()
   }
 
   cerrarAgregarSedes() {
     this.popupAgregarSedes = false;
-    this.sedeCompetencia = this.dataService.getSedeCompetencia();
   }
 
   guardarSedes() {
-    const index = this.sedesCompetencia.indexOf(this.sedeCompetencia);
-    if (index > -1) {
-      console.log("encontro indice", index);
-      this.sedesCompetencia[index].disponibilidad = this.sedeCompetencia.disponibilidad;
-    } else {
-      this.sedesCompetencia.push(this.sedeCompetencia);
-      console.log("no encontro indice", index);
-      console.log("sedesCompetencia", this.sedesCompetencia);
-      console.log("sedeCompetencia", this.sedeCompetencia);
-    }
-
+    // const index = this.sedesCompetencia.indexOf(this.sedeCompetencia);
+    // if (index > -1) {
+    //   console.log("encontro indice", index);
+    //   this.sedesCompetencia[index].disponibilidad = this.sedeCompetencia.disponibilidad;
+    // } else {
+    //   this.sedesCompetencia.push(this.sedeCompetencia);
+    //   console.log("no encontro indice", index);
+    //   console.log("sedesCompetencia", this.sedesCompetencia);
+    //   console.log("sedeCompetencia", this.sedeCompetencia);
+    // }
+    this.sedesCompetencia.push(this.sedeCompetencia);
     this.cerrarAgregarSedes();
   }
 
   agregarSedes() {
     this.popupAgregarSedes = true;
     this.agregarSedesTitulo = 'Añadir sedes';
+    this.sedeCompetencia = this.dataService.getSedeCompetencia();
   }
 
   abrirAltaCompetencia() {
     this.popupAltaCompetencia = true;
+    this.formCompetencia.instance.resetValues();
     this.altaCompetenciaTitulo = 'Alta de competencias';
   }
 
@@ -217,8 +217,8 @@ export class AltaCompetenciaComponent implements OnInit {
   }
 
   limpiarFiltros() {
-    this.dataGrid.instance.clearFilter();
-    this.dataGrid.instance.clearSorting();
+    this.gridCompetencia.instance.clearFilter();
+    this.gridCompetencia.instance.clearSorting();
   }
 
   seleccionaItemGrid($event) {
@@ -258,14 +258,13 @@ export class AltaCompetenciaComponent implements OnInit {
         this.formCompetencia.instance.resetValues();
         this.cerrarAltaCompetencia();
         //refrescar o recargar grilla
+        this.dataService.cgetCompetencias().then((response) => {
+          this.competenciasDataSource = response.items;
+        }).catch(error => {
+          console.log(error);
+        });
         this.gridCompetencia.instance.refresh();
-        notify({
-          message: "La competencia fue creada correctamente",
-          position: {
-            my: "center top",
-            at: "center top"
-          }
-        }, "success", 3000);
+        confirm('La competencia fue creada correctamente.');
       }).catch(error => {
 
       });
@@ -289,27 +288,36 @@ export class AltaCompetenciaComponent implements OnInit {
 
   agregarParticipante() {
     this.agregarParticipanteTitulo = 'Agregar Participante';
-    this.participante = this.dataService.getParticipante();
+    this.formParticipante.instance.resetValues();
     this.popupAgregarParticipante = true;
+  }
+
+  cerrarAgregarParticipante() {
+    this.participante = this.dataService.getParticipante();
+    this.popupAgregarParticipante = false;
+  }
+
+  actualizarCompetencias() {
+    this.dataService.cgetCompetencias().then((response) => {
+      this.competenciasDataSource = response.items;
+    }).catch(error => {
+      console.log(error);
+    });
   }
 
   guardarParticipante() {
     this.participante.competenciaId = this.competencia.id;
     this.participantesCompetencia.push(this.participante);
-    this.participantesCompetencia.forEach(participante => {
-      this.dataService.postParticipantes(participante).then((data: any) => {
-        confirm('Los participantes fueron guardados con éxito');
-        this.popupAgregarParticipante = false;
-      }).catch(error => {
-        console.log(error);
-      });
+    this.dataService.postParticipantes(this.participante).then((data: any) => {
+      confirm('El participante fue añadido con éxito.');
+      this.actualizarCompetencias();
+      this.popupAgregarParticipante = false;
+    }).catch(error => {
+      console.log(error);
     });
     console.log("guardado de participante en la lista de participantes");
   }
 
-  cerrarAgregarParticipante() {
-    this.popupAgregarParticipante = false;
-  }
 
   guardarListaParticipantes() {
     this.competencia.listaParticipantes = this.participantesCompetencia;
@@ -319,18 +327,9 @@ export class AltaCompetenciaComponent implements OnInit {
 
   generarFixture() {
     this.dataService.generarFixture(this.competencia.id).then((data: any) => {
-      console.log("data", data);
-      notify({
-        message: "Fixture generado correctamente",
-        position: {
-          my: "center top",
-          at: "center top"
-        }
-      }, "success", 5000);
+      confirm('Fixture generado correctamente.')
     }).catch(error => {
-
       confirm(error.error.error.exception[0].message);
-
     })
   }
 

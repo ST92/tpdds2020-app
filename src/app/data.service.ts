@@ -193,9 +193,10 @@ export class DataService {
 
     getDeportes() {
         let deportes = [
-            { id: 1, nombre: 'football' },
-            { id: 2, nombre: 'basquet' },
-            { id: 3, nombre: 'tenis' }
+            { id: 1, nombre: 'Fútbol' },
+            { id: 2, nombre: 'Basquet' },
+            { id: 3, nombre: 'Tenis' },
+            { id: 4, nombre: 'Rugby' }
         ]
 
         return deportes;
@@ -255,6 +256,16 @@ export class DataService {
                 return data;
             })
             .catch(error => { throw 'Data Loading Error' });
+    }
+
+    getCompetenciaById(competenciaId){
+        //añadir deporteId como parametro para la query
+        return this.httpClient.get(environment.apiUrl + 'competencias/' + competenciaId)
+            .toPromise()
+            .then((data: any) => {
+                return data;
+            })
+            .catch(error => { throw error });
     }
 
     postCompetencia(competencia) {
@@ -321,5 +332,7 @@ export class DataService {
                 throw error;
             });
     }
+
+    
 
 }
