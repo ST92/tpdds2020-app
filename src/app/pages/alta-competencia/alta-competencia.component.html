@@ -13,16 +13,17 @@
             (onSelectionChanged)="seleccionaItemGrid($event)" [showBorders]="true">
             <dxo-selection mode="single"></dxo-selection>
             <dxo-filter-row [visible]="true"></dxo-filter-row>
+            <dxo-header-filter [visible]="true"></dxo-header-filter>
             <dxi-column dataField="nombre" [allowFiltering]="true" caption="Nombre">
             </dxi-column>
-            <dxi-column dataField="deporteId.nombre" [allowFiltering]="true" caption="Deporte">
-                <dxo-lookup [dataSource]="deporteDataSource" displayExpr="nombre"></dxo-lookup>
+            <dxi-column dataField="deporteId.nombre" caption="Deporte">
+               
             </dxi-column>
-            <dxi-column dataField="tipoCompetenciaId.nombre" [allowFiltering]="true" caption="Modalidad">
-                <dxo-lookup [dataSource]="tipoCompetenciaDataSource" displayExpr="nombre"></dxo-lookup>
+            <dxi-column dataField="tipoCompetenciaId.nombre"  caption="Modalidad">
+                
             </dxi-column>
             <dxi-column dataField="estadoCompetenciaId.nombre" [allowFiltering]="true" caption="Estado">
-                <dxo-lookup [dataSource]="estadoCompetenciasDataSource" displayExpr="nombre"></dxo-lookup>
+                
             </dxi-column>
             <dxo-scrolling mode="virtual" rowRenderingMode="virtual"></dxo-scrolling>
             <dxo-paging [pageSize]="20"></dxo-paging>
@@ -41,7 +42,8 @@
                 <dxo-label text="Nombre"></dxo-label>
                 <dxi-validation-rule type="required" message="El campo nombre es obligatorio.">
                 </dxi-validation-rule>
-                <dxi-validation-rule type="stringLength" [max]="50" message="El nombre no puede exceder los 50 caracteres."></dxi-validation-rule>
+                <dxi-validation-rule type="stringLength" [max]="50"
+                    message="El nombre no puede exceder los 50 caracteres."></dxi-validation-rule>
             </dxi-item>
         </dxi-item>
 
@@ -187,7 +189,7 @@
     (closeOnOutsideClick)="false" (closeOnBackButton)="false" (onHidden)="cerrarAgregarSedes()"
     [(visible)]="popupAgregarSedes">
 
-    <dx-form id="formSedeCompetencia" [(formData)]="sedeCompetencia" labelLocation="top" minColWidth="200" width="100%">
+    <dx-form #formSedeCompetencia [(formData)]="sedeCompetencia" labelLocation="top" minColWidth="200" width="100%">
         <dxi-item itemType="group" colCount="2">
             <dxi-item dataField="sedesId" editorType="dxSelectBox" [editorOptions]="{ dataSource: sedesDataSource, 
                     value: sedeCompetencia?.sedesId, displayExpr: 'nombre', 
@@ -241,13 +243,13 @@
         <br>
         <br>
     </div>
-    
+
     <div class="buttons-on-popup" style="text-align:right">
         <dx-button class="button-popup white-text green-button" style="margin-left:5px" text="Cerrar" type="cancel"
             alignment="right" (onClick)="cerrarVerCompetencia()" icon="remove">
         </dx-button>
-        <dx-button class="button-popup white-text green-button" style="margin-left:5px" text="Generar Fixture" type="cancel"
-            alignment="right" (onClick)="generarFixture()" icon="add">
+        <dx-button class="button-popup white-text green-button" style="margin-left:5px" text="Generar Fixture"
+            type="cancel" alignment="right" (onClick)="generarFixture()" icon="add">
         </dx-button>
         <dx-button class="button-popup white-text green-button" style="margin-left:5px" text="Ver Participantes"
             type="cancel" alignment="right" (onClick)="verParticipantes()" icon="user">

@@ -11,7 +11,7 @@ export class AltaCompetenciaComponent implements OnInit {
   @ViewChild(DxDataGridComponent) gridCompetencia: DxDataGridComponent;
   @ViewChild(DxDataGridComponent) gridParticipantes: DxDataGridComponent;
   @ViewChild(DxFormComponent) formCompetencia: DxFormComponent;
-  @ViewChild(DxFormComponent) formSedeCompetencia: DxFormComponent;
+  @ViewChild("formSedeCompetencia") formSedeCompetencia: DxFormComponent;
   @ViewChild(DxFormComponent) formParticipante: DxFormComponent;
   @ViewChild(DxSelectBoxComponent) dxSelectBox: DxSelectBoxComponent;
 
@@ -175,28 +175,33 @@ export class AltaCompetenciaComponent implements OnInit {
   }
 
   cerrarAgregarSedes() {
+    //this.formSedeCompetencia.instance.resetValues();
+    this.sedeCompetencia = this.dataService.getSedeCompetencia();
+    setTimeout(() => {
+      this.formSedeCompetencia.instance.resetValues();
+    }, 200);
     this.popupAgregarSedes = false;
   }
 
   guardarSedes() {
-    // const index = this.sedesCompetencia.indexOf(this.sedeCompetencia);
-    // if (index > -1) {
-    //   console.log("encontro indice", index);
-    //   this.sedesCompetencia[index].disponibilidad = this.sedeCompetencia.disponibilidad;
-    // } else {
-    //   this.sedesCompetencia.push(this.sedeCompetencia);
-    //   console.log("no encontro indice", index);
-    //   console.log("sedesCompetencia", this.sedesCompetencia);
-    //   console.log("sedeCompetencia", this.sedeCompetencia);
-    // }
-    this.sedesCompetencia.push(this.sedeCompetencia);
+    const index = this.sedesCompetencia.map(function (s) { return s.sedesId; }).indexOf(this.sedeCompetencia.sedesId);
+    if (index > -1) {
+      console.log("encontro indice", index);
+      this.sedesCompetencia[index].disponibilidad = this.sedeCompetencia.disponibilidad;
+    } else {
+      this.sedesCompetencia.push(this.sedeCompetencia);
+      console.log("no encontro indice", index);
+      console.log("sedesCompetencia", this.sedesCompetencia);
+      console.log("sedeCompetencia", this.sedeCompetencia);
+    }
+    //this.sedesCompetencia.push(this.sedeCompetencia);
     this.cerrarAgregarSedes();
   }
 
   agregarSedes() {
     this.popupAgregarSedes = true;
     this.agregarSedesTitulo = 'Añadir sedes';
-    this.sedeCompetencia = this.dataService.getSedeCompetencia();
+    //this.sedeCompetencia = this.dataService.getSedeCompetencia();
   }
 
   abrirAltaCompetencia() {
@@ -254,7 +259,9 @@ export class AltaCompetenciaComponent implements OnInit {
 
   guardarCompetencia() {
     if (this.formCompetencia.instance.validate().isValid) {
+
       this.dataService.postCompetencia(this.competencia).then((data: any) => {
+
         this.formCompetencia.instance.resetValues();
         this.cerrarAltaCompetencia();
         //refrescar o recargar grilla
@@ -263,10 +270,52 @@ export class AltaCompetenciaComponent implements OnInit {
         }).catch(error => {
           console.log(error);
         });
+
         this.gridCompetencia.instance.refresh();
         confirm('La competencia fue creada correctamente.');
       }).catch(error => {
 
+        /*for (let objeto.errors in error.error.errors.children) {
+          console.log();
+        }*/
+        /**
+         * error.error.errors.children.nombre.errors[0]
+         * error.error.errors.children.tipoCompetenciaId.errors[0]
+         * error.error.errors.children.ptosEmpate.errors[0]
+         * error.error.errors.children.ptosPresentacion.errors[0]
+         * error.error.errors.children.tipoCompetenciaId.errors[0]
+         * error.error.errors.children.cantidadSets.errors[0]
+         * error.error.errors.children.ptosAusencia.errors[0]
+         * //para participante
+         * error.error.errors.children.email.errors[0]
+         * error.error.errors.children.nombre.errors[0] 
+         */
+        let mensajeError = '';
+        if (error.error.errors.children.nombre.errors !== undefined) {
+          console.log('nombre');
+          mensajeError = mensajeError + error.error.errors.children.nombre.errors[0] + ' \n';
+        }
+        if (error.error.errors.children.tipoCompetenciaId.errors !== undefined) {
+          console.log('tipoCompetenciaId');
+          mensajeError = mensajeError + error.error.errors.children.tipoCompetenciaId.errors[0] + ' \n';
+        }
+        if (error.error.errors.children.ptosEmpate.errors !== undefined) {
+          console.log('ptosEmpate');
+          mensajeError = mensajeError + error.error.errors.children.ptosEmpate.errors[0] + ' \n';
+        }
+        if (error.error.errors.children.ptosPresentacion.errors !== undefined) {
+          console.log('ptosPresentacion');
+          mensajeError = mensajeError + error.error.errors.children.ptosPresentacion.errors[0] + ' \n';
+        }
+        if (error.error.errors.children.cantidadSets.errors !== undefined) {
+          console.log('cantidadSets');
+          mensajeError = mensajeError + error.error.errors.children.cantidadSets.errors[0] + ' \n';
+        }
+        if (error.error.errors.children.ptosAusencia.errors !== undefined) {
+          console.log('ptosAusencia');
+          mensajeError = mensajeError + error.error.errors.children.ptosAusencia.errors[0] + ' \n';
+        }
+        confirm(mensajeError);
       });
 
     }

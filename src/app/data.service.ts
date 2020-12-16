@@ -278,6 +278,7 @@ export class DataService {
                 //throw error.error.errors.children.atributo.errors[0];
                 //debugger
                 console.log(error);
+                throw error;
             });
     }
 
