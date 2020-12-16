@@ -245,9 +245,7 @@ export class AltaCompetenciaComponent implements OnInit {
 
   guardarCompetencia() {
     if (this.formCompetencia.instance.validate().isValid) {
-
       this.dataService.postCompetencia(this.competencia).then((data: any) => {
-
         this.formCompetencia.instance.resetValues();
         this.cerrarAltaCompetencia();
         //refrescar o recargar grilla
@@ -261,6 +259,9 @@ export class AltaCompetenciaComponent implements OnInit {
         confirm('La competencia fue creada correctamente.');
       }).catch(error => {
         let mensajeError = '';
+        if (error.error.errors.errors !== undefined) {
+          mensajeError = mensajeError + error.error.errors.errors[0] + ' \n';
+        }
         if (error.error.errors.children.nombre.errors !== undefined) {
           mensajeError = mensajeError + error.error.errors.children.nombre.errors[0] + ' \n';
         }
