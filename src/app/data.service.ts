@@ -73,7 +73,7 @@ export class Competencia {
     ptosAusencia: number;
     cantidadSets: number;
     fechaBaja: Date;
-    estadoCompetenciaId: number;
+    estadoCompetenciaId: any;
     usuarioId: number;
     tipoCompetenciaId: number;
     deporteId: number;
@@ -277,7 +277,6 @@ export class DataService {
             .catch(error => {
                 //throw error.error.errors.children.atributo.errors[0];
                 //debugger
-                console.log(error);
                 throw error;
             });
     }
@@ -329,7 +328,6 @@ export class DataService {
             .catch(error => {
                 //throw error.error.errors.children.atributo.errors[0];
                 //debugger
-                console.log("postParticipantes", error);
                 throw error;
             });
     }

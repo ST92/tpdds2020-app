@@ -186,13 +186,9 @@ export class AltaCompetenciaComponent implements OnInit {
   guardarSedes() {
     const index = this.sedesCompetencia.map(function (s) { return s.sedesId; }).indexOf(this.sedeCompetencia.sedesId);
     if (index > -1) {
-      console.log("encontro indice", index);
       this.sedesCompetencia[index].disponibilidad = this.sedeCompetencia.disponibilidad;
     } else {
       this.sedesCompetencia.push(this.sedeCompetencia);
-      console.log("no encontro indice", index);
-      console.log("sedesCompetencia", this.sedesCompetencia);
-      console.log("sedeCompetencia", this.sedeCompetencia);
     }
     //this.sedesCompetencia.push(this.sedeCompetencia);
     this.cerrarAgregarSedes();
@@ -229,16 +225,6 @@ export class AltaCompetenciaComponent implements OnInit {
   seleccionaItemGrid($event) {
     if ($event.currentSelectedRowKeys.length > 0) {
       this.competencia = $event.selectedRowsData[0];
-      /**
-       * llamar cget de participantes, y realizar el count de los participantes para mostrar en 
-       * la grilla de participantes y el count en el ver competencia
-       * llamar al metodo de eventos restantes para mostrar en ver competencia
-       * 
-       * armar popup de generar fixture
-       */
-      /**
-       * Revisar que el cget no filtra por id de competencia
-       */
       this.dataService.cgetParticipantes(this.competencia.id).then((data: any) => {
         this.cantidadParticipantes = data.items.length;
         this.participantesCompetencia = data.items;
@@ -274,45 +260,23 @@ export class AltaCompetenciaComponent implements OnInit {
         this.gridCompetencia.instance.refresh();
         confirm('La competencia fue creada correctamente.');
       }).catch(error => {
-
-        /*for (let objeto.errors in error.error.errors.children) {
-          console.log();
-        }*/
-        /**
-         * error.error.errors.children.nombre.errors[0]
-         * error.error.errors.children.tipoCompetenciaId.errors[0]
-         * error.error.errors.children.ptosEmpate.errors[0]
-         * error.error.errors.children.ptosPresentacion.errors[0]
-         * error.error.errors.children.tipoCompetenciaId.errors[0]
-         * error.error.errors.children.cantidadSets.errors[0]
-         * error.error.errors.children.ptosAusencia.errors[0]
-         * //para participante
-         * error.error.errors.children.email.errors[0]
-         * error.error.errors.children.nombre.errors[0] 
-         */
         let mensajeError = '';
         if (error.error.errors.children.nombre.errors !== undefined) {
-          console.log('nombre');
           mensajeError = mensajeError + error.error.errors.children.nombre.errors[0] + ' \n';
         }
         if (error.error.errors.children.tipoCompetenciaId.errors !== undefined) {
-          console.log('tipoCompetenciaId');
           mensajeError = mensajeError + error.error.errors.children.tipoCompetenciaId.errors[0] + ' \n';
         }
         if (error.error.errors.children.ptosEmpate.errors !== undefined) {
-          console.log('ptosEmpate');
           mensajeError = mensajeError + error.error.errors.children.ptosEmpate.errors[0] + ' \n';
         }
         if (error.error.errors.children.ptosPresentacion.errors !== undefined) {
-          console.log('ptosPresentacion');
           mensajeError = mensajeError + error.error.errors.children.ptosPresentacion.errors[0] + ' \n';
         }
         if (error.error.errors.children.cantidadSets.errors !== undefined) {
-          console.log('cantidadSets');
           mensajeError = mensajeError + error.error.errors.children.cantidadSets.errors[0] + ' \n';
         }
         if (error.error.errors.children.ptosAusencia.errors !== undefined) {
-          console.log('ptosAusencia');
           mensajeError = mensajeError + error.error.errors.children.ptosAusencia.errors[0] + ' \n';
         }
         confirm(mensajeError);
@@ -322,6 +286,9 @@ export class AltaCompetenciaComponent implements OnInit {
   }
 
   cerrarVerParticipantes() {
+    setTimeout(() => {
+      this.gridCompetencia.instance.clearSelection();
+    }, 100);
     this.popupVerParticipantes = false;
   }
 
@@ -337,12 +304,16 @@ export class AltaCompetenciaComponent implements OnInit {
 
   agregarParticipante() {
     this.agregarParticipanteTitulo = 'Agregar Participante';
-    this.formParticipante.instance.resetValues();
+    //this.formParticipante.instance.resetValues();
     this.popupAgregarParticipante = true;
   }
 
   cerrarAgregarParticipante() {
+    //this.participante = this.dataService.getParticipante();
     this.participante = this.dataService.getParticipante();
+    setTimeout(() => {
+      this.formParticipante.instance.resetValues();
+    }, 500);
     this.popupAgregarParticipante = false;
   }
 
@@ -352,26 +323,44 @@ export class AltaCompetenciaComponent implements OnInit {
     }).catch(error => {
       console.log(error);
     });
+
+    this.dataService.cgetParticipantes(this.competencia.id).then((data: any) => {
+      this.cantidadParticipantes = data.items.length;
+      this.participantesCompetencia = data.items;
+    }).catch(error => {
+      console.log(error);
+    })
+
+    this.dataService.cgetProximosEncuentros(this.competencia.id).then((data: any) => {
+      this.proximosEncuentros = data;
+    }).catch(error => {
+      console.log(error);
+    })
   }
 
   guardarParticipante() {
     this.participante.competenciaId = this.competencia.id;
-    this.participantesCompetencia.push(this.participante);
     this.dataService.postParticipantes(this.participante).then((data: any) => {
-      confirm('El participante fue añadido con éxito.');
+      confirm('El participante fue añadido con éxito. Si generó un fixture previamente, deberá generarlo nuevamente.');
+      this.participantesCompetencia.push(this.participante);
       this.actualizarCompetencias();
       this.popupAgregarParticipante = false;
     }).catch(error => {
-      console.log(error);
+        let mensajeError = '';
+        if (error.error.errors.children.nombre.errors !== undefined) {
+          mensajeError = mensajeError + error.error.errors.children.nombre.errors[0] + ' \n';
+        }
+        if (error.error.errors.children.email.errors !== undefined) {
+          mensajeError = mensajeError + error.error.errors.children.email.errors[0] + ' \n';
+        }
+        confirm(mensajeError);
     });
-    console.log("guardado de participante en la lista de participantes");
   }
 
 
   guardarListaParticipantes() {
     this.competencia.listaParticipantes = this.participantesCompetencia;
     this.popupVerParticipantes = false;
-    console.log("guardado de la lista de participantes");
   }
 
   generarFixture() {

@@ -19,7 +19,7 @@ export const navigation = [
     ]
   },
   {
-    text: 'Alta Competencia',
+    text: 'Listar mis competencias',
     path: '/pages/alta-competencia',
     icon: 'folder'
   }
